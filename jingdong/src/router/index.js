@@ -1,25 +1,32 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from "vue-router";
 // import Home from '../views/Home.vue'
 
 const routes = [
-  // {
-  //   path: '/',
-  //   name: 'Home',
-  //   component: Home
-  // },
-  // {
-  //   path: '/about',
-  //   name: 'About',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  // }
-]
+  {
+    path: "/",
+    name: "Home",
+    component: () => import("../views/home/Home.vue"),
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import("../views/login/Login.vue"),
+    beforeEnter: (to, from, next) => {
+      const { isLogin } = localStorage.isLogin;
+      isLogin ? next({ name: "Home" }) : next();
+    },
+  },
+];
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
-})
+  routes,
+});
 
-export default router
+//每次路由跳转之前都会调用
+router.beforeEach((to, from, next) => {
+  const { isLogin } = localStorage;
+  isLogin || to.name === "Login" ? next() : next({ name: "Login" });
+});
+
+export default router;
